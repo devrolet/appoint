@@ -6,7 +6,7 @@ const form = document.querySelector('form'),
              phone = document.querySelector('#phone'),
              date = document.querySelector('#date'),
              hour = document.querySelector('#hour'),
-             work = document.querySelector('#work'),
+             desc = document.querySelector('#desc'),
              appointments = document.querySelector('#appointments'),
              appointmentTitle = document.querySelector('#appointment-title');
 
@@ -36,7 +36,29 @@ document.addEventListener('DOMContentLoaded', () => {
         let objectStore = db.createObjectStore('apppointments', {keypath: 'key', autoIncrement: true} );
         // createIndex: 1. field name 2. keypath 3. options
         objectStore.createIndex('artistname', 'artistname', {unique: false} );
+        objectStore.createIndex('labelname', 'labelname', {unique: false} );
+        objectStore.createIndex('phone', 'phone', {unique: false} );
+        objectStore.createIndex('date', 'date', {unique: false} );
+        objectStore.createIndex('hour', 'hour', {unique: false} );
+        objectStore.createIndex('desc', 'desc', {unique: false} );
 
         console.log('Database ready and fields created');
+    }
+
+    form.addEventListener('submit', addAppointment);
+
+    function addAppointment(e) {
+        e.preventDefault();
+
+        // create a new object with the form info
+        let newAppointment = {
+            artistname : artistName.value,
+            labelname : labelName.value,
+            phone : phone.value,
+            date : date.value,
+            hour : hour.value,
+            desc : desc.value
+        }
+        console.log(newAppointment);
     }
 });
