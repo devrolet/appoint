@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // create an object store
         // keypath is the the indexes for database
-        let objectStore = db.createObjectStore('apppointments', {keypath: 'key', autoIncrement: true} );
+        let objectStore = db.createObjectStore('appointments', {keypath: 'key', autoIncrement: true} );
         // createIndex: 1. field name 2. keypath 3. options
         objectStore.createIndex('artistname', 'artistname', {unique: false} );
         objectStore.createIndex('labelname', 'labelname', {unique: false} );
@@ -59,6 +59,23 @@ document.addEventListener('DOMContentLoaded', () => {
             hour : hour.value,
             desc : desc.value
         }
-        console.log(newAppointment);
+        
+        // Insert object into the database
+        let transaction = DB.transaction(['appointments'], 'readwrite');
+        let objectStore = transaction.objectStore('appointments');
+
+        // console.log(objectStore);
+        let request = objectStore.add(newAppointment);
+
+        // on success
+        request.onsuccess = () => {
+            form.reset();
+        }
+        transaction.oncomplete = () => {
+            console.log('New appointment added');
+        }
+        transaction.onerror = () => {
+            console.log('There was an error, try again');
+        }
     }
 });
