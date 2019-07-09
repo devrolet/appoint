@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // create an object store
         // keypath is the the indexes for database
-        let objectStore = db.createObjectStore('appointments', {keypath: 'key', autoIncrement: true} );
+        let objectStore = db.createObjectStore('appointments', {keyPath: 'key', autoIncrement: true} );
         // createIndex: 1. field name 2. keypath 3. options
         objectStore.createIndex('artistname', 'artistname', {unique: false} );
         objectStore.createIndex('labelname', 'labelname', {unique: false} );
@@ -110,10 +110,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="font-weight-bold">Time: <span class="font-weight-normal">${cursor.value.hour}</span></p>
                     <p class="font-weight-bold">Work Needed: <span class="font-weight-normal">${cursor.value.desc}</span></p>
 
-                `
+                `;
+
+                // Remove button
+                const removeBTN = document.createElement('button');
+                removeBTN.classList.add('btn', 'btn-danger');
+                removeBTN.innerHTML = '<span aria-hidden="true">x</span> Remove';
+                removeBTN.onclick = removeAppointment;
+
 
                 // add into HTML
+                appointmentHTML.appendChild(removeBTN);
                 appointments.appendChild(appointmentHTML);
+                
 
                 cursor.continue();
             } else {
@@ -128,5 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    }
+
+    function removeAppointment(e) {
+        let appointmentID = Number(e.target.parentElement.getAttribute('data-appointment-id') );
     }
 });
