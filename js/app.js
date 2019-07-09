@@ -24,6 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // save the result
         DB = AppointmentDB.result;
+
+        // display the appointments
+        displayAppointments();
     }
 
     // This message runs once (creates schema)
@@ -73,9 +76,57 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         transaction.oncomplete = () => {
             console.log('New appointment added');
+
+            displayAppointments();
         }
         transaction.onerror = () => {
             console.log('There was an error, try again');
+        }
+    }
+
+    function displayAppointments() {
+        // clear the previous appointments
+        while(appointments.firstChild) {
+            appointments.removeChild(appointments.firstChild);
+        }
+
+        // create the object store
+        let objectStore = DB.transaction('appointments').objectStore('appointments');
+
+        objectStore.openCursor().onsuccess = function(e) {
+            // assign the current cursor
+            let cursor = e.target.result;
+
+            if(cursor) {
+                let appointmentHTML = document.createElement('li');
+                appointmentHTML.setAttribute('data-appointment-id', cursor.value.key);
+                appointmentHTML.classList.add('list-group-item');
+
+                appointmentHTML.innerHTML = `
+                    <p class="font-weight-bold">Artist Name: <span class="font-weight-normal">${cursor.value.artistname}</span></p>
+                    <p class="font-weight-bold">Label Name: <span class="font-weight-normal">${cursor.value.labelname}</span></p>
+                    <p class="font-weight-bold">Phone: <span class="font-weight-normal">${cursor.value.phone}</span></p>
+                    <p class="font-weight-bold">Date: <span class="font-weight-normal">${cursor.value.date}</span></p>
+                    <p class="font-weight-bold">Time: <span class="font-weight-normal">${cursor.value.hour}</span></p>
+                    <p class="font-weight-bold">Work Needed: <span class="font-weight-normal">${cursor.value.desc}</span></p>
+
+                `
+
+                // add into HTML
+                appointments.appendChild(appointmentHTML);
+
+                cursor.continue();
+            } else {
+                if(!appointments.firstChild) {
+                    appointmentTitle.textContent = 'Add a new session';
+                    let noAppointment = document.createElement('p');
+                    noAppointment.classList.add('text-center');
+                    noAppointment.textContent = 'No results found';
+                    appointments.appendChild(noAppointment);
+                } else {
+                    appointmentTitle.textContent = 'Manage your sessions';
+                }
+            }
         }
     }
 });
