@@ -140,6 +140,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function removeAppointment(e) {
+        // get the appointment id
         let appointmentID = Number(e.target.parentElement.getAttribute('data-appointment-id') );
+        // use a transaction
+        let transaction = DB.transaction(['appointments'], 'readwrite');
+        let objectStore = transaction.objectStore('appointments');
+        objectStore.delete(appointmentID);
+
+        transaction.oncomplete = () => {
+            e.target.parentElement.parentElement.removeChild(e.target.parentElement);
+
+            if(!appointments.firstChild) {
+                appointmentTitle.textContent = 'Add a new session';
+                let noAppointment = document.createElement('p');
+                noAppointment.classList.add('text-center');
+                noAppointment.textContent = 'No results found';
+                appointments.appendChild(noAppointment);
+            } else {
+                appointmentTitle.textContent = 'Manage your sessions';
+            }
+        }
+
+
     }
 });
